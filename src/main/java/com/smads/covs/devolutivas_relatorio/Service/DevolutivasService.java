@@ -24,9 +24,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
+import java.util.*;
 
 @Service
 public class DevolutivasService implements Serializable {
@@ -262,9 +260,12 @@ public class DevolutivasService implements Serializable {
 
                     byte[] answers = decoder.decode(result);
 
-                    System.out.println(answers.toString());
+                    JSONObject jsonAnswers =new JSONObject(new String(answers));
 
-                    return answers;
+                    Map<String, Object> strObjAnswers;
+                    strObjAnswers = mapper.readValue(jsonAnswers.toString(), HashMap.class);
+
+                    return strObjAnswers;
 
                 }
             }
