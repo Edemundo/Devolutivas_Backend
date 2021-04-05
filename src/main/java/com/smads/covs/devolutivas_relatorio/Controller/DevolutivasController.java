@@ -2,6 +2,7 @@ package com.smads.covs.devolutivas_relatorio.Controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smads.covs.devolutivas_relatorio.Model.SasQuestions;
 import com.smads.covs.devolutivas_relatorio.Model.SasServices;
 import com.smads.covs.devolutivas_relatorio.Service.DevolutivasService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,5 +67,16 @@ public class DevolutivasController  {
     @GetMapping(path = "{sasName}/{sasMonthActivity}/{token}")
     public ResponseEntity getSasServicesAnswers(@PathVariable("token") String token) throws UnsupportedEncodingException {
         return new ResponseEntity(devolutivasService.getSasServicesAnswers(token), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "questions/{qtoken}")
+    public ResponseEntity<ArrayList<SasQuestions>> getQuestions(@PathVariable("qtoken") String qtoken) throws UnsupportedEncodingException {
+        ArrayList<SasQuestions> lstQuestions = devolutivasService.getQuestions(qtoken);
+        if(lstQuestions == null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        else {
+            return new ResponseEntity<>(lstQuestions, HttpStatus.OK);
+        }
     }
 }

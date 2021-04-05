@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.smads.covs.devolutivas_relatorio.Model.SasQuestions;
 import com.smads.covs.devolutivas_relatorio.Model.SasServices;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -275,5 +276,74 @@ public class DevolutivasService implements Serializable {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
+
+    public ArrayList<SasQuestions> getQuestions(String qtoken) throws UnsupportedEncodingException{
+        DefaultHttpClient client = new DefaultHttpClient();
+
+        client.getCredentialsProvider().setCredentials(new AuthScope("10.10.190.25", 3128), new UsernamePasswordCredentials("x521804", ".Covs@111"));
+
+        HttpHost proxy = new HttpHost("10.10.190.25", 3128);
+
+        client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+
+        HttpPost post = new HttpPost("http://formulario.smads.prefeitura.sp.gov.br/index.php/admin/remotecontrol");
+        post.setHeader("Content-type", "application/json");
+        post.setEntity( new StringEntity("{\"method\": \"get_session_key\", \"params\": [\"admin\", \"admin_c2o2v2s\" ], \"id\": 1}"));
+        try {
+            HttpResponse response = client.execute(post);
+            if(response.getStatusLine().getStatusCode() == 200){
+                HttpEntity entity = response.getEntity();
+                String sessionKey = parse(EntityUtils.toString(entity));
+                post.setEntity( new StringEntity("{\n" +
+                        "    \"method\":\"list_questions\",\n" +
+                        "    \"params\":[\""+sessionKey+"\",\"655794\",\""+qtoken+"\",\"pt-BR\"],\n" +
+                        "    \"id\":1\n" +
+                        "}"));
+                response = client.execute(post);
+                if(response.getStatusLine().getStatusCode() == 200){
+                    entity = response.getEntity();
+                    String entityString = EntityUtils.toString(entity);
+
+                    JSONObject json = new JSONObject(entityString);
+                    JSONArray result = json.getJSONArray("result");
+
+                    System.out.println(result);
+
+                    int resultLength = result.length();
+
+                    ArrayList<SasQuestions> lstQuestions = new ArrayList<>();
+
+                    System.out.println(resultLength);
+
+                    for (int i=0; i<resultLength; i++) {
+                        JSONObject service = result.getJSONObject(i);
+                        SasQuestions sasQuestions = new SasQuestions();
+
+                        String compare = service.getString("parent_qid");
+                        if(compare.equals("0")){
+                            int j = 0;
+                            String q = service.getString("question");
+                            q = q.replaceAll("(\\{.*})", "");
+                            sasQuestions.setQuestion_order(service.getString("question_order"));
+                            sasQuestions.setQuestion(q);
+                            sasQuestions.setType(service.getString("type"));
+
+                            lstQuestions.add(j, sasQuestions);
+                            j++;
+                        }
+
+                    }
+
+                    return lstQuestions;
+
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
     }
 }
