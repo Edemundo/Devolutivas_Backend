@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.lang.StringBuilder;
 
 @Service
 public class DevolutivasService implements Serializable {
@@ -308,13 +309,9 @@ public class DevolutivasService implements Serializable {
                     JSONObject json = new JSONObject(entityString);
                     JSONArray result = json.getJSONArray("result");
 
-                    System.out.println(result);
-
                     int resultLength = result.length();
 
                     ArrayList<SasQuestions> lstQuestions = new ArrayList<>();
-
-                    System.out.println(resultLength);
 
                     for (int i=0; i<resultLength; i++) {
                         JSONObject service = result.getJSONObject(i);
@@ -323,12 +320,39 @@ public class DevolutivasService implements Serializable {
                         String compare = service.getString("parent_qid");
                         if(compare.equals("0")){
                             int j = 0;
-                            String q = service.getString("question");
-                            q = q.replaceAll("(\\{.*})", "");
-                            sasQuestions.setQuestion_order(service.getString("question_order"));
-                            sasQuestions.setQuestion(q);
-                            sasQuestions.setType(service.getString("type"));
+                            String question = service.getString("question");
 
+                            //Formatar para remover fórmulas
+                            question = question.replaceAll("(\\{.*})", "");
+
+                            int initialDot = question.indexOf(".", question.indexOf(".") + 1);
+                            int endDot = question.lastIndexOf(".");
+
+                            //Removendo todos os characteres entre a segunda ocorrência de . e sua última
+                            if (initialDot != -1 && endDot != -1 && initialDot != endDot) {
+                                StringBuilder newquestion = new StringBuilder(question);
+
+                                newquestion = newquestion.delete(initialDot, endDot);
+
+                                question = newquestion.toString();
+                            }
+
+                            //Pegando apenas o trecho principal da pergunta
+                            int endIndex = question.indexOf("\r");
+                            String newstr = "";
+                            if (endIndex != -1)
+                            {
+                                newstr = question.substring(0, endIndex);
+                            }
+
+                            if (newstr.length() > 2){
+                                sasQuestions.setQuestion(newstr);
+                            }else {
+                                sasQuestions.setQuestion(question);
+                            }
+
+                            sasQuestions.setQuestion_order(service.getString("question_order"));
+                            sasQuestions.setType(service.getString("type"));
                             lstQuestions.add(j, sasQuestions);
                             j++;
                         }
