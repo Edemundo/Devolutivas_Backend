@@ -65,8 +65,8 @@ public class DevolutivasController  {
     }
 
     @GetMapping(path = "{sasName}/{sasMonthActivity}/{token}")
-    public ResponseEntity getSasServicesAnswers(@PathVariable("token") String token) throws UnsupportedEncodingException {
-        return new ResponseEntity(devolutivasService.getSasServicesAnswers(token), HttpStatus.OK);
+    public ResponseEntity getSasServicesAnswers(@PathVariable("token") String token, @PathVariable("attribute_4")String type) throws UnsupportedEncodingException {
+        return new ResponseEntity(devolutivasService.getSasServicesAnswers(token, type), HttpStatus.OK);
     }
 
     @GetMapping(path = "questions/{qtoken}")

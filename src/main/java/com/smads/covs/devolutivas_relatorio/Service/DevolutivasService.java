@@ -222,7 +222,7 @@ public class DevolutivasService implements Serializable {
         return null;
     }
 
-    public Object getSasServicesAnswers(String token) throws UnsupportedEncodingException {
+    public Object getSasServicesAnswers(String token, String type) throws UnsupportedEncodingException {
         DefaultHttpClient client = new DefaultHttpClient();
 
         client.getCredentialsProvider().setCredentials(new AuthScope("10.10.190.25", 3128), new UsernamePasswordCredentials("x521804", ".Covs@111"));
@@ -241,7 +241,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"export_responses_by_token\",\n" +
-                        "    \"params\":[\""+sessionKey+"\",\"655794\",\"json\",\""+token+"\",\"pt-BR\",\"complete\"],\n" +
+                        "    \"params\":[\""+sessionKey+"\",\"655794\",\"json\",\""+token+"\",\"pt-BR\",\"complete\",\"code\"],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);
@@ -266,6 +266,7 @@ public class DevolutivasService implements Serializable {
 
                     Map<String, Object> strObjAnswers;
                     strObjAnswers = mapper.readValue(jsonAnswers.toString(), HashMap.class);
+
 
                     return strObjAnswers;
 
@@ -325,10 +326,13 @@ public class DevolutivasService implements Serializable {
                             //Formatar para remover fórmulas
                             question = question.replaceAll("(\\{.*})", "");
 
+
+                            // 4. AIUSDUIASD
+
+                            //Removendo todos os characteres entre a segunda ocorrência de . e sua última
                             int initialDot = question.indexOf(".", question.indexOf(".") + 1);
                             int endDot = question.lastIndexOf(".");
 
-                            //Removendo todos os characteres entre a segunda ocorrência de . e sua última
                             if (initialDot != -1 && endDot != -1 && initialDot != endDot) {
                                 StringBuilder newquestion = new StringBuilder(question);
 
@@ -337,9 +341,9 @@ public class DevolutivasService implements Serializable {
                                 question = newquestion.toString();
                             }
 
-                            //Pegando apenas o trecho principal da pergunta
                             int endIndex = question.indexOf("\r");
                             String newstr = "";
+
                             if (endIndex != -1)
                             {
                                 newstr = question.substring(0, endIndex);
