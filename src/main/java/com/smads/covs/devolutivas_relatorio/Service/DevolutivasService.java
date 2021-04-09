@@ -130,7 +130,6 @@ public class DevolutivasService implements Serializable {
                     }
 
                     JSONObject json = new JSONObject(entityString);
-                    System.out.println(json.toString());
                     JSONArray result = json.getJSONArray("result");
 
                     int resultLength = result.length();
@@ -262,11 +261,85 @@ public class DevolutivasService implements Serializable {
 
                     byte[] answers = decoder.decode(result);
 
-                    JSONObject jsonAnswers =new JSONObject(new String(answers));
+                    JSONObject jsonAllAnswers =new JSONObject(new String(answers));
+
+                    JSONArray answerArray = jsonAllAnswers.getJSONArray("responses");
+
+
+                    String answerToString  = answerArray.toString();
+                    int idInitialQuote = answerToString.indexOf("\"");
+                    int idEndQuote = answerToString.indexOf("\"", answerToString.indexOf("\"") + 1);
+
+                    String answerId = answerToString.substring(idInitialQuote + 1, idEndQuote);
+
+
+                    JSONObject answerArrayToObject = answerArray.getJSONObject(0);
+
+                    JSONObject answersWithoutId = answerArrayToObject.getJSONObject(answerId);
+
+
+                    String allAnswers = answersWithoutId.toString();
+
+                    // remove colchetes inicial e final do conjunto de respostas
+                    allAnswers = allAnswers.substring(1, allAnswers.length() - 1);
+
+
+                    // Tratativa de tipologias que estão por extenso
+                    String sadpi = "SERVICO DE ALIMENTACAO DOMICILIAR PARA PESSOA IDOSA";
+                    String ncpoprua = "NUCLEO DE CONVIVENCIA PARA ADULTOS EM SITUACAO DE RUA";
+
+                    if (type.equalsIgnoreCase(sadpi)){
+                        type = "sadpi";
+                    }
+                    else if (type.equalsIgnoreCase(ncpoprua)){
+                        type = "ncpoprua";
+                    }
+
+                    //Pegando apenas os caracteres determinantes de cada tipologia
+                    int typeLenght;
+                    if (type.length() >= 3) {
+                        type = type.substring(0, 3);
+                        typeLenght = 3;
+                    } else {
+                        typeLenght = 2;
+                    }
+
+                    JSONObject answerByType = new JSONObject();
+
+                    //para cada elemento do objeto de respostas quebra por "," e filtra de acordo com a tipologia
+                    for (int i = 0; i < answersWithoutId.length(); i++ ){
+
+                        // adiciona todas as respostas separadas por "," no array de String
+                        String[] splittedAnswers = allAnswers.split(",");
+                        String answer = splittedAnswers[i];
+
+                        // coleta os caracteres referente a tipologia para comparação
+                        String typeToCompare = answer.substring(1, typeLenght + 1);
+
+                        if (typeToCompare.equalsIgnoreCase(type)) {
+                            //salva as posições de cada caracter para recortar o texto entre eles
+                            int answerTitleFirstQuote = answer.indexOf("\"");
+                            int answerTitleFinalQuote = answer.indexOf("\"", answer.indexOf("\"") + 1);
+                            int answerContentFirstQuote = answer.indexOf("\"", answer.indexOf(":") + 1);
+                            int answerContentFinalQuote = answer.indexOf("\"", answerContentFirstQuote + 1);
+
+                            // armazena o título de cada resposta
+                            String answerTitle = answer.substring(answerTitleFirstQuote + 1, answerTitleFinalQuote);
+
+
+                            String answerContent = "";
+                            if (answerContentFirstQuote != -1) {
+                                //armazena o conteúdo de cada resposta
+                                answerContent = answer.substring(answerContentFirstQuote + 1, answerContentFinalQuote);
+                            }
+                            // adiciona cada resposta no modelo {"titulo": "conteudo"...}
+                            answerByType.put(answerTitle, answerContent);
+                        }
+                    }
 
                     Map<String, Object> strObjAnswers;
-                    strObjAnswers = mapper.readValue(jsonAnswers.toString(), HashMap.class);
-
+//                    strObjAnswers = mapper.readValue(jsonAllAnswers.toString(), HashMap.class);
+                    strObjAnswers = mapper.readValue(answerByType.toString(), HashMap.class);
 
                     return strObjAnswers;
 
@@ -325,9 +398,6 @@ public class DevolutivasService implements Serializable {
 
                             //Formatar para remover fórmulas
                             question = question.replaceAll("(\\{.*})", "");
-
-
-                            // 4. AIUSDUIASD
 
                             //Removendo todos os characteres entre a segunda ocorrência de . e sua última
                             int initialDot = question.indexOf(".", question.indexOf(".") + 1);
