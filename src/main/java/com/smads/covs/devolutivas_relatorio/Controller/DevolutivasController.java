@@ -42,7 +42,6 @@ public class DevolutivasController  {
         Object objSasName = devolutivasService.getSasMonthActivity(sasName);
         if(objSasName == null)
         {
-            System.out.println("adudhasuhdaushdua");
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         else{

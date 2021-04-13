@@ -31,6 +31,11 @@ import java.lang.StringBuilder;
 @Service
 public class DevolutivasService implements Serializable {
 
+    //Id do formulário
+    //consulta = 334161
+    //produção = 655794
+    String formId = "334161";
+
     private ObjectMapper mapper = new ObjectMapper();
 
     public static String parse(String jsonLine) {
@@ -59,7 +64,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"list_participants\",\n" +
-                        "    \"params\":[\""+sessionKey+"\",\"655794\",1, 2000, false, [\"attribute_1\"]],\n" +
+                        "    \"params\":[\""+sessionKey+"\"," + formId + ",1, 2000, false, [\"attribute_1\"]],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);
@@ -68,6 +73,7 @@ public class DevolutivasService implements Serializable {
                     String entityString = EntityUtils.toString(entity);
 
                     JSONObject json = new JSONObject(entityString);
+                    System.out.println(json.toString());
                     JSONArray result = json.getJSONArray("result");
 
                     int resultLength = result.length();
@@ -115,7 +121,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"list_participants\",\n" +
-                        "    \"params\":[\""+sessionKey+"\",\"655794\",1, 2000, false, [\"attribute_1\",\"attribute_7\"], {\"attribute_1\": \""+sasName+"\"}],\n" +
+                        "    \"params\":[\""+sessionKey+"\"," + formId + ",1, 2000, false, [\"attribute_1\",\"attribute_7\"], {\"attribute_1\": \""+sasName+"\"}],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);
@@ -176,7 +182,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"list_participants\",\n" +
-                        "    \"params\":[\""+sessionKey+"\",\"655794\",1, 2000, false, [\"attribute_1\",\"attribute_7\",\"attribute_4\"], {\"attribute_1\": \""+sasName+"\",\"attribute_7\": \""+sasMonthActivity+"\"}],\n" +
+                        "    \"params\":[\""+sessionKey+"\"," + formId + ",1, 2000, false, [\"attribute_1\",\"attribute_7\",\"attribute_4\"], {\"attribute_1\": \""+sasName+"\",\"attribute_7\": \""+sasMonthActivity+"\"}],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);
@@ -205,7 +211,89 @@ public class DevolutivasService implements Serializable {
 
                         sasServices.setToken(service.getString("token"));
                         sasServices.setFirstname(participantInfo.getString("firstname"));
-                        sasServices.setAttribute_4(service.getString("attribute_4"));
+                        sasServices.setTypology(service.getString("attribute_4"));
+
+                        //Pega o id do grupo de questões baseado na tipologia
+                        String qGroupId = "";
+                        String tipologia = service.getString("attribute_4");
+                        switch (tipologia){
+                            case "CCA":
+                                qGroupId = "683";
+                                break;
+
+                            case "CJ":
+                                qGroupId = "720";
+                                break;
+
+                            case "NAISPD":
+                                qGroupId = "684";
+                                break;
+
+                            case "CDCM":
+                                qGroupId = "685";
+                                break;
+
+                            case "BAGAGEIRO":
+                                qGroupId = "718";
+                                break;
+
+                            case "CDI":
+                                qGroupId = "719";
+                                break;
+
+                            case "SPVV":
+                                qGroupId = "721";
+                                break;
+
+                            case "NUCLEO DE CONVIVENCIA PARA ADULTOS EM SITUACAO DE RUA":
+                                qGroupId = "722";
+                                break;
+
+                            case "SISP":
+                                qGroupId = "723";
+                                break;
+
+                            case "MSE":
+                                qGroupId = "724";
+                                break;
+
+                            case "RESTAURANTE ESCOLA":
+                                qGroupId = "725";
+                                break;
+
+                            case "CRECI":
+                                qGroupId = "726";
+                                break;
+
+                            case "NCI":
+                                qGroupId = "727";
+                                break;
+
+                            case "CIRCO SOCIAL":
+                                qGroupId = "728";
+                                break;
+
+                            case "SASF":
+                                qGroupId = "729";
+                                break;
+
+                            case "SERVIÇO DE ALIMENTACAO DOMICILIAR PARA PESSOA IDOSA":
+                                qGroupId = "730";
+                                break;
+
+                            case "CEDESP":
+                                qGroupId = "731";
+                                break;
+
+                            case "CCINTER":
+                                qGroupId = "732";
+                                break;
+
+                            default:
+                                qGroupId = "tipologia inserida de forma errada";
+
+                        }
+                        sasServices.setQuestionGroupId(qGroupId);
 
                         lstSasServices.add(i, sasServices);
                     }
@@ -240,7 +328,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"export_responses_by_token\",\n" +
-                        "    \"params\":[\""+sessionKey+"\",\"655794\",\"json\",\""+token+"\",\"pt-BR\",\"complete\",\"code\"],\n" +
+                        "    \"params\":[\""+sessionKey+"\"," + formId + ",\"json\",\""+token+"\",\"pt-BR\",\"complete\",\"code\"],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);
@@ -260,6 +348,7 @@ public class DevolutivasService implements Serializable {
                     Base64.Decoder decoder = Base64.getDecoder();
 
                     byte[] answers = decoder.decode(result);
+                    System.out.println(answers.toString());
 
                     JSONObject jsonAllAnswers =new JSONObject(new String(answers));
 
@@ -372,7 +461,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"list_questions\",\n" +
-                        "    \"params\":[\""+sessionKey+"\",\"655794\",\""+qtoken+"\",\"pt-BR\"],\n" +
+                        "    \"params\":[\""+sessionKey+"\"," + formId + ",\""+qtoken+"\",\"pt-BR\"],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);

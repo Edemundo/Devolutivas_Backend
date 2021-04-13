@@ -4,7 +4,8 @@ public class SasServices {
 
     private String token;
     private String firstname;
-    private String attribute_4;
+    private String typology;
+    private String questionGroupId;
 
     public SasServices() {
     }
@@ -25,12 +26,20 @@ public class SasServices {
         this.firstname = firstname;
     }
 
-    public String getAttribute_4() {
-        return attribute_4;
+    public String getTypology() {
+        return typology;
     }
 
-    public void setAttribute_4(String attribute_4) {
-        this.attribute_4 = attribute_4;
+    public void setTypology(String typology) {
+        this.typology = typology;
+    }
+
+    public String getQuestionGroupId() {
+        return questionGroupId;
+    }
+
+    public void setQuestionGroupId(String qGroupId) {
+        this.questionGroupId = qGroupId;
     }
 
     @Override
@@ -38,7 +47,8 @@ public class SasServices {
         return "SasServices{" +
                 "token='" + token + '\'' +
                 ", firstname='" + firstname + '\'' +
-                ", attribute_4='" + attribute_4 + '\'' +
+                ", typology='" + typology + '\'' +
+                ", questionGroupId='" + questionGroupId + '\'' +
                 '}';
     }
 }
