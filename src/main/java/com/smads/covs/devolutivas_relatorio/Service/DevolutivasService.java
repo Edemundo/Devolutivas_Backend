@@ -34,7 +34,7 @@ public class DevolutivasService implements Serializable {
     //Id do formulário
     //consulta = 334161
     //produção = 655794
-    String formId = "334161";
+    String formId = "655794";
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -64,7 +64,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"list_participants\",\n" +
-                        "    \"params\":[\""+sessionKey+"\"," + formId + ",1, 2000, false, [\"attribute_1\"]],\n" +
+                        "    \"params\":[\""+sessionKey+"\"," + formId + ",0, 2000, false, [\"attribute_1\"]],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);
@@ -121,7 +121,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"list_participants\",\n" +
-                        "    \"params\":[\""+sessionKey+"\"," + formId + ",1, 2000, false, [\"attribute_1\",\"attribute_7\"], {\"attribute_1\": \""+sasName+"\"}],\n" +
+                        "    \"params\":[\""+sessionKey+"\"," + formId + ",0, 2000, false, [\"attribute_1\",\"attribute_7\"], {\"attribute_1\": \""+sasName+"\"}],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);
@@ -182,7 +182,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"list_participants\",\n" +
-                        "    \"params\":[\""+sessionKey+"\"," + formId + ",1, 2000, false, [\"attribute_1\",\"attribute_7\",\"attribute_4\"], {\"attribute_1\": \""+sasName+"\",\"attribute_7\": \""+sasMonthActivity+"\"}],\n" +
+                        "    \"params\":[\""+sessionKey+"\"," + formId + ",0, 2000, false, [\"attribute_1\",\"attribute_2\",\"attribute_3\",\"attribute_4\",\"attribute_5\",\"attribute_7\"], {\"attribute_1\": \""+sasName+"\",\"attribute_7\": \""+sasMonthActivity+"\"}],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);
@@ -212,6 +212,9 @@ public class DevolutivasService implements Serializable {
                         sasServices.setToken(service.getString("token"));
                         sasServices.setFirstname(participantInfo.getString("firstname"));
                         sasServices.setTypology(service.getString("attribute_4"));
+                        sasServices.setDistrict(service.getString("attribute_2"));
+                        sasServices.setProtection(service.getString("attribute_3"));
+                        sasServices.setTerm(service.getString("attribute_5"));
 
                         //Pega o id do grupo de questões baseado na tipologia
                         String qGroupId = "";
