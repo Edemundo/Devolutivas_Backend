@@ -8,10 +8,7 @@ import com.smads.covs.devolutivas_relatorio.Service.DevolutivasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
@@ -32,11 +29,12 @@ public class DevolutivasController  {
         this.devolutivasService = devolutivasService;
     }
 
+    @CrossOrigin
     @GetMapping
     public ResponseEntity getSas() throws UnsupportedEncodingException {
         return new ResponseEntity<>(devolutivasService.getSas(), HttpStatus.OK);
     }
-
+    @CrossOrigin
     @GetMapping(path = "{sasName}")
     public ResponseEntity getSasMonthActivity(@PathVariable("sasName") String sasName) throws UnsupportedEncodingException{
         Object objSasName = devolutivasService.getSasMonthActivity(sasName);
@@ -49,7 +47,7 @@ public class DevolutivasController  {
             return new ResponseEntity<>(objSasName, HttpStatus.OK);
         }
     }
-
+    @CrossOrigin
     @GetMapping(path = "{sasName}/{sasMonthActivity}")
     public ResponseEntity<ArrayList<SasServices>> getSasServices(@PathVariable("sasName") String sasName,
                                                             @PathVariable("sasMonthActivity") String sasMonthActivity)
@@ -63,12 +61,12 @@ public class DevolutivasController  {
             return new ResponseEntity<>(lstSasServices, HttpStatus.OK);
         }
     }
-
+    @CrossOrigin
     @GetMapping(path = "{sasName}/{sasMonthActivity}/{token}/{attribute_4}")
     public ResponseEntity getSasServicesAnswers(@PathVariable("token") String token, @PathVariable("attribute_4")String type) throws UnsupportedEncodingException {
         return new ResponseEntity(devolutivasService.getSasServicesAnswers(token, type), HttpStatus.OK);
     }
-
+    @CrossOrigin
     @GetMapping(path = "questions/{qtoken}")
     public ResponseEntity<ArrayList<SasQuestions>> getQuestions(@PathVariable("qtoken") String qtoken) throws UnsupportedEncodingException {
         ArrayList<SasQuestions> lstQuestions = devolutivasService.getQuestions(qtoken);
