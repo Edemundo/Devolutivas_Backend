@@ -9,6 +9,7 @@ public class SasServices {
     private String district;
     private String protection;
     private String term;
+    private String position;
 
     public SasServices() {
     }
@@ -69,6 +70,14 @@ public class SasServices {
         this.term = term;
     }
 
+    public String getPosition(){
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
     @Override
     public String toString() {
         return "SasServices{" +
@@ -79,6 +88,7 @@ public class SasServices {
                 ", district='" + district + '\'' +
                 ", protection='" + protection + '\'' +
                 ", term='" + term + '\'' +
+                ", position='" + position + '\'' +
                 '}';
     }
 }
