@@ -22,7 +22,7 @@ public class DevolutivasController  {
 
     private final DevolutivasService devolutivasService;
 
-    private ObjectMapper mapper = new ObjectMapper();
+//    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public DevolutivasController(DevolutivasService devolutivasService) {

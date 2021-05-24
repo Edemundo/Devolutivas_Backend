@@ -4,7 +4,9 @@ public class SasQuestions {
 
     private String question;
     private String type;
-    private String question_order;
+    private String questionOrder;
+    private String questionId;
+    private String parentQuestionId;
 
     public SasQuestions() {
     }
@@ -25,20 +27,39 @@ public class SasQuestions {
         this.type = type;
     }
 
-    public String getQuestion_order() {
-        return question_order;
+    public String getQuestionOrder() {
+        return questionOrder;
     }
 
-    public void setQuestion_order(String question_order) {
-        this.question_order = question_order;
+    public void setQuestionOrder(String questionOrder) {
+        this.questionOrder = questionOrder;
     }
+
+    public String getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
+    }
+
+    public String getParentQuestionId() {
+        return parentQuestionId;
+    }
+
+    public void setParentQuestionId(String parentQuestionId) {
+        this.parentQuestionId = parentQuestionId;
+    }
+
 
     @Override
     public String toString() {
         return "SasQuestions{" +
                 "question='" + question + '\'' +
                 ", type='" + type + '\'' +
-                ", question_order='" + question_order + '\'' +
+                ", questionOrder='" + questionOrder + '\'' +
+                ", questionId='" + questionId + '\'' +
+                ", parentQuestionId='" + parentQuestionId + '\'' +
                 '}';
     }
 }

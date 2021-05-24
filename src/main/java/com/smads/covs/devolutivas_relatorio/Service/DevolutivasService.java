@@ -182,7 +182,7 @@ public class DevolutivasService implements Serializable {
                 String sessionKey = parse(EntityUtils.toString(entity));
                 post.setEntity( new StringEntity("{\n" +
                         "    \"method\":\"list_participants\",\n" +
-                        "    \"params\":[\""+sessionKey+"\"," + formId + ",0, 2000, false, [\"attribute_1\",\"attribute_2\",\"attribute_3\",\"attribute_4\",\"attribute_5\",\"attribute_6\",\"attribute_7\"], {\"attribute_1\": \""+sasName+"\",\"attribute_7\": \""+sasMonthActivity+"\"}],\n" +
+                        "    \"params\":[\""+sessionKey+"\"," + formId + ",0, 2000, false, [\"completed\",\"attribute_1\",\"attribute_2\",\"attribute_3\",\"attribute_4\",\"attribute_5\",\"attribute_6\",\"attribute_7\"], {\"attribute_1\": \""+sasName+"\",\"attribute_7\": \""+sasMonthActivity+"\"}],\n" +
                         "    \"id\":1\n" +
                         "}"));
                 response = client.execute(post);
@@ -209,13 +209,16 @@ public class DevolutivasService implements Serializable {
                         SasServices sasServices = new SasServices();
                         participantInfo = service.getJSONObject("participant_info");
 
+
                         sasServices.setToken(service.getString("token"));
                         sasServices.setFirstname(participantInfo.getString("firstname"));
+                        sasServices.setEmail(participantInfo.getString("email"));
                         sasServices.setTypology(service.getString("attribute_4"));
                         sasServices.setDistrict(service.getString("attribute_2"));
                         sasServices.setProtection(service.getString("attribute_3"));
                         sasServices.setTerm(service.getString("attribute_5"));
                         sasServices.setPosition(service.getString("attribute_6"));
+                        sasServices.setCompleted(service.getString("completed"));
 
                         //Pega o id do grupo de questões baseado na tipologia
                         String qGroupId = "";
@@ -484,8 +487,9 @@ public class DevolutivasService implements Serializable {
                         JSONObject service = result.getJSONObject(i);
                         SasQuestions sasQuestions = new SasQuestions();
 
-                        String compare = service.getString("parent_qid");
-                        if(compare.equals("0")){
+                        String parentQid = service.getString("parent_qid");
+                        String relevance = service.getString("relevance");
+                        if(parentQid.equals("0") && !relevance.equals("0")){
                             int j = 0;
                             String question = service.getString("question");
 
@@ -518,11 +522,20 @@ public class DevolutivasService implements Serializable {
                                 sasQuestions.setQuestion(question);
                             }
 
-                            sasQuestions.setQuestion_order(service.getString("question_order"));
+                            sasQuestions.setQuestionOrder(service.getString("question_order"));
                             sasQuestions.setType(service.getString("type"));
                             lstQuestions.add(j, sasQuestions);
+                            sasQuestions.setQuestionId(service.getString("qid"));
+                            sasQuestions.setParentQuestionId("0");
                             j++;
                         }
+//                        PARA FINALIZAR A JUNÇÃO DE QUESTOES E SUBQUESTOES
+
+//                          - Criar um objeto SasSubQuestion que armazena todas as questoes de parentQid diferentes de 0
+//                          - Adicionar para cada question Id sua subquestao com um parentQid num novo objeto de sasQuestion.
+//                        if(!parentQid.equals("0")){
+//                            String subQuestion = service.getString("question");
+//                        }
 
                     }
 

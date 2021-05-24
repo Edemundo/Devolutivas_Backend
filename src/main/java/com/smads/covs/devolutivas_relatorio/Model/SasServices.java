@@ -10,6 +10,9 @@ public class SasServices {
     private String protection;
     private String term;
     private String position;
+    private String email;
+    private String completed;
+
 
     public SasServices() {
     }
@@ -78,17 +81,27 @@ public class SasServices {
         this.position = position;
     }
 
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) { this.email = email; }
+
+    public String getCompleted() { return completed; }
+
+    public void setCompleted(String completed) { this.completed = completed; }
+
     @Override
     public String toString() {
         return "SasServices{" +
                 "token='" + token + '\'' +
                 ", firstname='" + firstname + '\'' +
+                ", email='" + email + '\'' +
                 ", typology='" + typology + '\'' +
                 ", questionGroupId='" + questionGroupId + '\'' +
                 ", district='" + district + '\'' +
                 ", protection='" + protection + '\'' +
                 ", term='" + term + '\'' +
                 ", position='" + position + '\'' +
+                ", completed='" + completed + '\'' +
                 '}';
     }
 }
