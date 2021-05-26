@@ -16,6 +16,7 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.lang.StringBuilder;
 
@@ -35,6 +38,8 @@ public class DevolutivasService implements Serializable {
     //consulta = 334161
     //produção = 655794
     String formId = "655794";
+    private final DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyy");
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -164,6 +169,8 @@ public class DevolutivasService implements Serializable {
 
     public ArrayList<SasServices> getSasServices(String sasName, String sasMonthActivity)throws UnsupportedEncodingException {
 
+
+
         DefaultHttpClient client = new DefaultHttpClient();
 
         client.getCredentialsProvider().setCredentials(new AuthScope("10.10.190.25", 3128), new UsernamePasswordCredentials("x521804", ".Covs@111"));
@@ -210,15 +217,33 @@ public class DevolutivasService implements Serializable {
                         participantInfo = service.getJSONObject("participant_info");
 
 
+                        String submitDate = service.getString("completed");
+                        if (!submitDate.equals("N")) {
+                            LocalDate submitDateInputFormat = LocalDate.parse(submitDate, inputFormatter);
+                            submitDate = outputFormatter.format(submitDateInputFormat);
+                        }
+
+                        String tipologiaService = service.getString("attribute_4");
+
+                        String sadpi = "SERVICO DE ALIMENTACAO DOMICILIAR PARA PESSOA IDOSA";
+                        String ncpoprua = "NUCLEO DE CONVIVENCIA PARA ADULTOS EM SITUACAO DE RUA";
+
+                        if (tipologiaService.equalsIgnoreCase(sadpi)){
+                            tipologiaService = "SADPI";
+                        }
+                        else if (tipologiaService.equalsIgnoreCase(ncpoprua)){
+                            tipologiaService = "NCPOPRUA";
+                        }
+
                         sasServices.setToken(service.getString("token"));
                         sasServices.setFirstname(participantInfo.getString("firstname"));
                         sasServices.setEmail(participantInfo.getString("email"));
-                        sasServices.setTypology(service.getString("attribute_4"));
+                        sasServices.setTypology(tipologiaService);
                         sasServices.setDistrict(service.getString("attribute_2"));
                         sasServices.setProtection(service.getString("attribute_3"));
                         sasServices.setTerm(service.getString("attribute_5"));
                         sasServices.setPosition(service.getString("attribute_6"));
-                        sasServices.setCompleted(service.getString("completed"));
+                        sasServices.setCompleted(submitDate);
 
                         //Pega o id do grupo de questões baseado na tipologia
                         String qGroupId = "";
@@ -252,7 +277,7 @@ public class DevolutivasService implements Serializable {
                                 qGroupId = "721";
                                 break;
 
-                            case "NUCLEO DE CONVIVENCIA PARA ADULTOS EM SITUACAO DE RUA":
+                            case "NCPOPRUA":
                                 qGroupId = "722";
                                 break;
 
@@ -284,7 +309,7 @@ public class DevolutivasService implements Serializable {
                                 qGroupId = "729";
                                 break;
 
-                            case "SERVIÇO DE ALIMENTACAO DOMICILIAR PARA PESSOA IDOSA":
+                            case "SADPI":
                                 qGroupId = "730";
                                 break;
 
