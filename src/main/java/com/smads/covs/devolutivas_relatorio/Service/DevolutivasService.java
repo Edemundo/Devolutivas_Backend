@@ -35,7 +35,7 @@ import java.lang.StringBuilder;
 public class DevolutivasService implements Serializable {
 
     //Id do formulário
-    //consulta = 334161
+    //consulta = 919783
     //produção = 655794
     String formId = "655794";
     private final DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -78,7 +78,7 @@ public class DevolutivasService implements Serializable {
                     String entityString = EntityUtils.toString(entity);
 
                     JSONObject json = new JSONObject(entityString);
-                    System.out.println(json.toString());
+                    System.out.println(entityString);
                     JSONArray result = json.getJSONArray("result");
 
                     int resultLength = result.length();
